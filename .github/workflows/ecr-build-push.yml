@@ -32,7 +32,7 @@ on:
         description: "AWS region where ECR repositories are hosted"
         required: false
         type: string
-        default: "eu-central-1"
+        default: "us-east-2"
       aws-account-id:
         description: "AWS account ID for constructing the ECR registry URL"
         required: true
@@ -114,20 +114,19 @@ jobs:
 
       # ── Trivy scanning ─────────────────────────────────────────────────────
 
-      # Informational only — does not block the push.
-      # In production change exit-code to "1" to gate on CRITICAL CVEs.
-      - name: Trivy scan — CRITICAL (informational)
+      # Blocks the push if any CRITICAL CVE is found.
+      - name: Trivy scan — CRITICAL (blocking gate)
         uses: aquasecurity/trivy-action@0.35.0
         with:
           image-ref: ${{ env.SOURCE_IMAGE }}
           format: table
           output: trivy-critical-${{ inputs.service }}.txt
-          exit-code: "0"
+          exit-code: "1"
           ignore-unfixed: true
           severity: CRITICAL
           trivyignores: .trivyignore
 
-      # Step 2: HIGH scan — informational only, does not block the push.
+      # HIGH scan — informational only, does not block the push.
       - name: Trivy scan — HIGH (informational)
         if: always()
         uses: aquasecurity/trivy-action@0.35.0
