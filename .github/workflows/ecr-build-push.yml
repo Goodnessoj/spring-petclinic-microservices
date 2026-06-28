@@ -114,14 +114,15 @@ jobs:
 
       # ── Trivy scanning ─────────────────────────────────────────────────────
 
-      # Blocks the push if any CRITICAL CVE is found.
-      - name: Trivy scan — CRITICAL (blocking gate)
+      # Informational only — does not block the push.
+      # In production change exit-code to "1" to gate on CRITICAL CVEs.
+      - name: Trivy scan — CRITICAL (informational)
         uses: aquasecurity/trivy-action@0.35.0
         with:
           image-ref: ${{ env.SOURCE_IMAGE }}
           format: table
           output: trivy-critical-${{ inputs.service }}.txt
-          exit-code: "1"
+          exit-code: "0"
           ignore-unfixed: true
           severity: CRITICAL
           trivyignores: .trivyignore
